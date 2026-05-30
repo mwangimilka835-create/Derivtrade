@@ -22,6 +22,7 @@
         .card { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #30363d; }
         .btn-trade { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; width: 48%; }
     </style>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
 <body>
 
@@ -35,6 +36,7 @@
         <div style="font-weight: bold; font-size: 1.2em;">TRADERWIN</div>
         <div id="balance-display" style="background: #000; padding: 5px 10px; border-radius: 5px; color: #4caf50;">Connecting...</div>
     </header>
+    <div id="chart-container" style="width: 100%; height: 300px; background: #161b22; border-radius: 8px; margin-bottom: 20px;"></div>
 
     <div id="dash" class="page active">
         <div class="card">
@@ -48,8 +50,9 @@
     </div>
 </div>
 
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <script>
-    // 1. ADD YOUR TOKEN HERE
+    // 1. CONFIGURATION
     const apiToken = "YOUR_TOKEN_HERE"; 
     const app_id = "1089"; 
 
@@ -65,14 +68,21 @@
         }
     }, 40);
 
-    // 3. API LOGIC
+    // 3. CHART INITIALIZATION
+    const chart = LightweightCharts.createChart(document.getElementById('chart-container'), {
+        layout: { backgroundColor: '#161b22', textColor: '#ddd' },
+        width: document.getElementById('chart-container').offsetWidth,
+        height: 300,
+    });
+    const lineSeries = chart.addLineSeries({ color: '#007bff' });
+
+    // 4. API & TRADING LOGIC
     const ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${app_id}`);
-    let lastProposalId = null;
     
     ws.onopen = () => {
         ws.send(JSON.stringify({ authorize: apiToken }));
-        // Subscribe to balance updates
         ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+        ws.send(JSON.stringify({ ticks: "R_10", subscribe: 1 }));
     };
 
     ws.onmessage = (msg) => {
@@ -82,34 +92,31 @@
         if (res.balance) {
             document.getElementById('balance-display').innerText = 
                 `${res.balance.balance} ${res.balance.currency}`;
-        } 
-        // Handle Proposal (Price check before buying)
+        }
+        // Handle Chart Ticks
+        else if (res.tick) {
+            lineSeries.update({ time: res.tick.epoch, value: res.tick.quote });
+        }
+        // Handle Trade Execution
         else if (res.proposal) {
-            lastProposalId = res.proposal.id;
-            console.log("Proposal Received: " + res.proposal.payout);
-            // Auto-buy if you want, or show a confirm dialog
-            ws.send(JSON.stringify({ buy: lastProposalId, price: 0 }));
-        } 
-        // Handle Purchase confirmation
+            ws.send(JSON.stringify({ buy: res.proposal.id, price: 0 }));
+        }
         else if (res.buy) {
-            alert("Trade Placed! Contract ID: " + res.buy.contract_id);
+            alert("Trade Successful! Contract: " + res.buy.contract_id);
         }
     };
 
-    // 4. TRADE EXECUTION
     function placeTrade(type) {
-        // Request a proposal for Volatility 10 (1s) index
-        const req = {
+        ws.send(JSON.stringify({
             proposal: 1,
-            amount: 10, // Stake amount
+            amount: 10,
             basis: "stake",
-            contract_type: type, // 'CALL' or 'PUT'
+            contract_type: type,
             currency: "USD",
             duration: 5,
             duration_unit: "t",
-            symbol: "R_10" 
-        };
-        ws.send(JSON.stringify(req));
+            symbol: "R_10"
+        }));
     }
 </script>
 </body>
