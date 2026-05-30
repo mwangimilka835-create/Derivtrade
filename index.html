@@ -31,12 +31,14 @@
     <div class="progress-bar"><div id="progress"></div></div>
 </div>
 
-<div id="main-content">
+
+    <div id="main-content">
     <header>
         <div style="font-weight: bold; font-size: 1.2em;">TRADERWIN</div>
         <div id="balance-display" style="background: #000; padding: 5px 10px; border-radius: 5px; color: #4caf50;">Connecting...</div>
     </header>
-    <div id="chart-container" style="width: 100%; height: 300px; background: #161b22; border-radius: 8px; margin-bottom: 20px;"></div>
+
+    <div id="chart-container" style="width: 100%; height: 300px; margin-bottom: 20px; background: #161b22;"></div>
 
     <div id="dash" class="page active">
         <div class="card">
@@ -48,7 +50,8 @@
             <button class="btn-trade" style="background:#dc3545;" onclick="placeTrade('PUT')">BUY FALL</button>
         </div>
     </div>
-</div>
+    </div>
+
 
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 <script>
