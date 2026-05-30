@@ -9,12 +9,14 @@
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; }
 header { background: #1e293b; padding: 1rem; display: flex; justify-content: space-between; align-items: center; }
 .logo { font-size: 1.5rem; font-weight: bold; color: #3b82f6; }
-.balance { background: #334155; padding: 0.5rem 1rem; border-radius: 8px; }
+.balance { background: #334155; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; }
 .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
 .card { background: #1e293b; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; }
 .btn { background: #3b82f6; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; font-weight: 600; }
 .btn:hover { background: #2563eb; }
+.btn:disabled { background: #475569; cursor: not-allowed; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+#status { margin-top: 1rem; color: #94a3b8; }
 </style>
 </head>
 <body>
@@ -26,34 +28,85 @@ header { background: #1e293b; padding: 1rem; display: flex; justify-content: spa
 <div class="container">
   <div class="card">
     <h2>Connect to Deriv</h2>
-    <button class="btn" onclick="connectDeriv()">Connect Account</button>
-    <p id="status" style="margin-top: 1rem; color: #94a3b8;">Not connected</p>
+    <button class="btn" id="connectBtn" onclick="connectDeriv()">Connect Account</button>
+    <button class="btn" id="logoutBtn" onclick="logout()" style="display:none; background:#ef4444;">Logout</button>
+    <p id="status">Not connected</p>
   </div>
 
   <div class="grid">
     <div class="card">
       <h3>Quick Trade</h3>
-      <button class="btn" onclick="alert('Trade logic goes here')">Buy</button>
+      <button class="btn" id="buyBtn" onclick="placeTrade('CALL')" disabled>Buy</button>
+      <button class="btn" id="sellBtn" onclick="placeTrade('PUT')" disabled style="background:#ef4444; margin-left:0.5rem;">Sell</button>
     </div>
     <div class="card">
-      <h3>Market Data</h3>
-      <p id="market">Loading...</p>
+      <h3>Account Info</h3>
+      <p id="account">--</p>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@deriv/deriv-api@latest/dist/deriv-api.min.js"></script>
 <script>
-// Your Deriv App ID - replace with your own from developers.deriv.com
-const app_id = 12345;
+const app_id = 12345; // <-- REPLACE THIS with your App ID from developers.deriv.com
+let api;
+let token = localStorage.getItem('deriv_token');
 
-function connectDeriv() {
-  document.getElementById('status').textContent = 'Connecting...';
-  // Add Deriv API connection logic here
-  setTimeout(() => {
-    document.getElementById('status').textContent = 'Connected';
-    document.getElementById('balance').textContent = '1000.00';
-  }, 1500);
+async function connectDeriv() {
+  const status = document.getElementById('status');
+  status.textContent = 'Connecting...';
+  document.getElementById('connectBtn').disabled = true;
+
+  try {
+    api = new DerivAPI({ app_id });
+
+    if (!token) {
+      const authUrl = `https://oauth.deriv.com/oauth2/authorize?app_id=${app_id}`;
+      const popup = window.open(authUrl, 'deriv_auth', 'width=500,height=600');
+      
+      window.addEventListener('message', async (e) => {
+        if (e.data.msg_type === 'authorize') {
+          token = e.data.authorize.token;
+          localStorage.setItem('deriv_token', token);
+          await initAccount();
+        }
+      });
+      return;
+    }
+
+    await initAccount();
+  } catch (err) {
+    status.textContent = 'Error: ' + err.message;
+    console.error(err);
+    document.getElementById('connectBtn').disabled = false;
+  }
 }
+
+async function initAccount() {
+  const status = document.getElementById('status');
+  await api.authorize(token);
+  const balance = await api.balance();
+  const account = await api.authorize(token);
+  
+  document.getElementById('balance').textContent = balance.balance.toFixed(2);
+  document.getElementById('account').textContent = account.authorize.loginid;
+  status.textContent = 'Connected';
+  document.getElementById('connectBtn').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'inline-block';
+  document.getElementById('buyBtn').disabled = false;
+  document.getElementById('sellBtn').disabled = false;
+}
+
+async function placeTrade(contract_type) {
+  alert(`Trade logic for ${contract_type} goes here. Add your stake, duration, etc.`);
+}
+
+function logout() {
+  localStorage.removeItem('deriv_token');
+  location.reload();
+}
+
+if (token) connectDeriv();
 </script>
 </body>
 </html>
