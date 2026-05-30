@@ -1,44 +1,82 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trader Dashboard</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; margin: 0; }
-        .tab { display: none; padding: 20px; }
-        .active { display: block; }
-        nav { background: #1e1e1e; padding: 10px; display: flex; justify-content: space-around; }
-        button { padding: 10px; border: none; background: #333; color: white; border-radius: 5px; }
+        :root {
+            --bg-color: #0d1117;
+            --panel-color: #161b22;
+            --accent-blue: #58a6ff;
+            --text-color: #c9d1d9;
+        }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: sans-serif; margin: 0; }
+        
+        /* Navigation Tabs */
+        .nav-bar { display: flex; overflow-x: auto; background: var(--panel-color); padding: 10px; }
+        .tab-btn { padding: 10px 15px; border: none; background: none; color: #8b949e; cursor: pointer; white-space: nowrap; }
+        .tab-btn.active { color: var(--accent-blue); border-bottom: 2px solid var(--accent-blue); }
+
+        /* Page Content */
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
+
+        /* UI Cards */
+        .card { background: var(--panel-color); padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .tool-btn { background: #21262d; border: 1px solid #30363d; color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        
+        button.primary { background: var(--accent-blue); color: white; border: none; padding: 10px; border-radius: 4px; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<nav>
-    <button onclick="showTab('dashboard')">Dashboard</button>
-    <button onclick="showTab('trader')">Trader</button>
+<nav class="nav-bar">
+    <button class="tab-btn active" onclick="switchPage('dashboard')">Dashboard</button>
+    <button class="tab-btn" onclick="switchPage('bot-builder')">Bot Builder</button>
+    <button class="tab-btn" onclick="switchPage('manual')">Manual Trader</button>
+    <button class="tab-btn" onclick="switchPage('analysis')">Analysis</button>
 </nav>
 
-<div id="dashboard" class="tab active">
-    <h1>Dashboard</h1>
-    <input type="password" id="token" placeholder="Enter API Token">
-    <button onclick="connect()">Connect</button>
-    <p id="balance">Balance: --</p>
+<div id="dashboard" class="page active">
+    <h2>Dashboard</h2>
+    <div class="grid">
+        <div class="tool-btn">📂 Load Bot</div>
+        <div class="tool-btn">📊 Analysis</div>
+        <div class="tool-btn">🚀 Speed Bot</div>
+        <div class="tool-btn">📉 Manual</div>
+    </div>
+    <div class="card">
+        <h3>Live Trading Signals</h3>
+        <p>Scanning markets...</p>
+    </div>
 </div>
 
-<div id="trader" class="tab">
-    <h1>Manual Trader</h1>
-    <button class="btn-rise" onclick="buy('CALL')">BUY RISE</button>
-    <button class="btn-fall" onclick="buy('PUT')">BUY FALL</button>
+<div id="bot-builder" class="page">
+    <h2>Bot Builder</h2>
+    <div class="card">
+        <label>Stake:</label><input type="number" value="1">
+        <button class="primary">Start Bot</button>
+    </div>
+</div>
+
+<div id="manual" class="page">
+    <h2>D-Trader</h2>
+    <div class="card" style="text-align: center;">
+        <p>Plan the trade. Let the price come to you.</p>
+        <button class="primary" style="background:#28a745;">BUY RISE</button>
+        <button class="primary" style="background:#dc3545;">BUY FALL</button>
+    </div>
 </div>
 
 <script>
-    function showTab(id) {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-    }
-
-    function connect() {
-        alert("Connected!"); // We'll add the API logic here next
+    function switchPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 </script>
 </body>
-  </html>
+</html>
