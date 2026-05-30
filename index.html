@@ -21,6 +21,17 @@
         .page.active { display: block; }
         .card { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #30363d; }
         .btn-trade { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; width: 48%; }
+    /* Signal Wave Animation */
+.wave-container { display: flex; align-items: center; justify-content: center; gap: 5px; height: 30px; }
+.wave { width: 5px; height: 20px; background: #007bff; animation: pulse 1s infinite; }
+.wave:nth-child(2) { animation-delay: 0.2s; }
+.wave:nth-child(3) { animation-delay: 0.4s; }
+.wave:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes pulse {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(2.5); }
+}
     </style>
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 </head>
@@ -39,18 +50,24 @@
     </header>
 
     <div id="chart-container" style="width: 100%; height: 300px; margin-bottom: 20px; background: #161b22;"></div>
+<div id="dash" class="page active">
+    <div id="chart-container" style="width: 100%; height: 300px; margin-bottom: 20px; background: #161b22; border-radius: 8px;"></div>
 
-    <div id="dash" class="page active">
-        <div class="card">
-            <h3>Live Market Status</h3>
-            <p id="signal-status">Scanning for entry points...</p>
-        </div>
-        <div class="card">
-            <button class="btn-trade" style="background:#28a745;" onclick="placeTrade('CALL')">BUY RISE</button>
-            <button class="btn-trade" style="background:#dc3545;" onclick="placeTrade('PUT')">BUY FALL</button>
+    <div class="card">
+        <h3 style="color: #4caf50; font-size: 0.9em;">● LIVE TRADING SIGNALS</h3>
+        <div id="signal-box" style="text-align: center; padding: 10px;">
+            <div class="wave-container">
+                <div class="wave"></div><div class="wave"></div><div class="wave"></div><div class="wave"></div>
+            </div>
+            <p style="font-size: 0.8em; margin-top: 10px;">Scanning markets...</p>
         </div>
     </div>
+
+    <div class="card">
+        <button class="btn-trade" style="background:#28a745; width:48%;" onclick="placeTrade('CALL')">BUY RISE</button>
+        <button class="btn-trade" style="background:#dc3545; width:48%;" onclick="placeTrade('PUT')">BUY FALL</button>
     </div>
+</div>
 
 
 <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
