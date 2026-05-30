@@ -3,64 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TraderWin - Trade. Win. Repeat.</title>
+    <title>TraderWin Platform</title>
     <style>
-        body { background-color: #050a14; color: #fff; font-family: sans-serif; margin: 0; }
+        :root { --bg: #050a14; --panel: #161b22; --accent: #007bff; --text: #e6edf3; }
+        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; }
         
-        /* Boot Sequence */
-        #preloader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #050a14; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 9999;
-        }
-        
-        /* Updated Brain Icon using your image */
-        .brain-icon { 
-            width: 200px; height: 200px; 
-            background: url('IMG-20260529-WA0025.jpg') no-repeat center center;
-            background-size: contain; margin-bottom: 20px;
-        }
-        
-        .progress-bar { width: 60%; height: 4px; background: #222; margin-top: 20px; border-radius: 2px; }
-        #progress { height: 100%; width: 0%; background: #4caf50; transition: 0.1s; border-radius: 2px; }
+        /* PRELOADER */
+        #preloader { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .brain-icon { width: 150px; height: 150px; background: url('IMG-20260529-WA0025.jpg') no-repeat center; background-size: contain; margin-bottom: 20px; }
+        .progress-bar { width: 70%; height: 6px; background: #222; border-radius: 3px; margin: 20px 0; }
+        #progress { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; }
 
-        /* Branding Text */
-        .brand-name { font-size: 1.5em; font-weight: bold; margin-top: 10px; }
+        /* APP STYLING */
+        header { background: var(--panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-bar { display: flex; overflow-x: auto; background: var(--bg); padding: 10px; gap: 10px; }
+        .tab-btn { background: var(--panel); color: #8b949e; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
+        .tab-btn.active { background: var(--accent); color: white; }
+        
+        .page { display: none; padding: 20px; }
+        .page.active { display: block; }
+        .card { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-trade { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="preloader">
     <div class="brain-icon"></div>
-    <div class="brand-name">TRADERWIN.com</div>
-    <h2 id="boot-text">Initializing D-Bot...</h2>
+    <h2 id="boot-text">Connecting to Server...</h2>
     <div class="progress-bar"><div id="progress"></div></div>
-    <p>Boot sequence <span id="percent">0</span>%</p>
+    <p><span id="percent">0</span>%</p>
 </div>
 
 <div id="main-content" style="display: none;">
-    <h1 style="text-align: center; margin-top: 50px;">Welcome to TraderWin</h1>
+    <header>
+        <div style="font-weight: bold; font-size: 1.2em;">TRADERWIN</div>
+        <div id="balance-display" style="background: #000; padding: 5px 10px; border-radius: 5px;">0.00 USD</div>
+    </header>
+
+    <nav class="nav-bar">
+        <button class="tab-btn active" onclick="showPage('dash', this)">Dashboard</button>
+        <button class="tab-btn" onclick="showPage('manual', this)">Manual</button>
+        <button class="tab-btn" onclick="showPage('bots', this)">Bots</button>
+    </nav>
+
+    <div id="dash" class="page active">
+        <div class="grid">
+            <div class="card">📂 Load Bot</div>
+            <div class="card">📊 Analysis</div>
+            <div class="card">🚀 Speed Bot</div>
+            <div class="card">📉 Manual</div>
+        </div>
+        <div class="card">
+            <h3>● LIVE SIGNALS</h3>
+            <p id="signal-status">Scanning markets...</p>
+        </div>
+    </div>
+
+    <div id="manual" class="page">
+        <div class="card">
+            <h2>Manual Trade</h2>
+            <input type="number" placeholder="Stake" style="width:100%; padding:10px; margin-bottom:10px;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-trade" style="background:#28a745; width:50%">BUY RISE</button>
+                <button class="btn-trade" style="background:#dc3545; width:50%">BUY FALL</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="bots" class="page">
+        <div class="card"><h2>Automated Bots</h2><p>Coming Soon...</p></div>
+    </div>
 </div>
 
 <script>
+    // Boot sequence
     let p = 0;
-    const progress = document.getElementById('progress');
-    const percent = document.getElementById('percent');
-    const bootText = document.getElementById('boot-text');
-
     const loader = setInterval(() => {
         p++;
-        progress.style.width = p + "%";
-        percent.innerText = p;
-
-        if (p === 30) bootText.innerText = "Initializing your account...";
-        if (p === 60) bootText.innerText = "Syncing signals...";
+        document.getElementById('progress').style.width = p + "%";
+        document.getElementById('percent').innerText = p;
         if (p >= 100) {
             clearInterval(loader);
             document.getElementById('preloader').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }
-    }, 40); 
+    }, 30);
+
+    // Navigation
+    function showPage(id, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
 </script>
 </body>
-</html>
+                    </html>
