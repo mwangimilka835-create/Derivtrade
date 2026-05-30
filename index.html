@@ -8,117 +8,84 @@
         :root { --bg: #050a14; --panel: #161b22; --accent: #007bff; --text: #e6edf3; }
         body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; }
         
-        /* PRELOADER */
+        /* BOOT SEQUENCE */
         #preloader { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
-        .brain-icon { width: 150px; height: 150px; background: url('IMG-20260529-WA0025.jpg') no-repeat center; background-size: contain; margin-bottom: 20px; }
-        .progress-bar { width: 70%; height: 6px; background: #222; border-radius: 3px; margin: 20px 0; }
-        #progress { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; }
+        .brain-icon { width: 180px; height: 180px; background: url('IMG-20260529-WA0025.jpg') no-repeat center; background-size: contain; margin-bottom: 20px; }
+        .progress-bar { width: 70%; height: 6px; background: #222; border-radius: 3px; }
+        #progress { height: 100%; width: 0%; background: var(--accent); border-radius: 3px; transition: 0.1s; }
 
-        /* APP STYLING */
-        header { background: var(--panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-bar { display: flex; overflow-x: auto; background: var(--bg); padding: 10px; gap: 10px; }
-        .tab-btn { background: var(--panel); color: #8b949e; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; }
-        .tab-btn.active { background: var(--accent); color: white; }
-        
+        /* DASHBOARD */
+        #main-content { display: none; }
+        header { background: var(--panel); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #222; }
         .page { display: none; padding: 20px; }
         .page.active { display: block; }
-        .card { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn-trade { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; }
+        .card { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #30363d; }
+        .btn-trade { padding: 15px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; width: 48%; }
     </style>
 </head>
 <body>
 
 <div id="preloader">
     <div class="brain-icon"></div>
-    <h2 id="boot-text">Connecting to Server...</h2>
     <div class="progress-bar"><div id="progress"></div></div>
-    <p><span id="percent">0</span>%</p>
 </div>
 
-<div id="main-content" style="display: none;">
+<div id="main-content">
     <header>
         <div style="font-weight: bold; font-size: 1.2em;">TRADERWIN</div>
-        <div id="balance-display" style="background: #000; padding: 5px 10px; border-radius: 5px;">0.00 USD</div>
+        <div id="balance-display" style="background: #000; padding: 5px 10px; border-radius: 5px; color: #4caf50;">Connecting...</div>
     </header>
 
-    <nav class="nav-bar">
-        <button class="tab-btn active" onclick="showPage('dash', this)">Dashboard</button>
-        <button class="tab-btn" onclick="showPage('manual', this)">Manual</button>
-        <button class="tab-btn" onclick="showPage('bots', this)">Bots</button>
-    </nav>
-
     <div id="dash" class="page active">
-        <div class="grid">
-            <div class="card">📂 Load Bot</div>
-            <div class="card">📊 Analysis</div>
-            <div class="card">🚀 Speed Bot</div>
-            <div class="card">📉 Manual</div>
+        <div class="card">
+            <h3>Live Market Status</h3>
+            <p id="signal-status">Scanning for entry points...</p>
         </div>
         <div class="card">
-            <h3>● LIVE SIGNALS</h3>
-            <p id="signal-status">Scanning markets...</p>
+            <button class="btn-trade" style="background:#28a745;" onclick="placeTrade('CALL')">BUY RISE</button>
+            <button class="btn-trade" style="background:#dc3545;" onclick="placeTrade('PUT')">BUY FALL</button>
         </div>
-    </div>
-
-    <div id="manual" class="page">
-        <div class="card">
-            <h2>Manual Trade</h2>
-            <input type="number" placeholder="Stake" style="width:100%; padding:10px; margin-bottom:10px;">
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-trade" style="background:#28a745; width:50%">BUY RISE</button>
-                <button class="btn-trade" style="background:#dc3545; width:50%">BUY FALL</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="bots" class="page">
-        <div class="card"><h2>Automated Bots</h2><p>Coming Soon...</p></div>
     </div>
 </div>
 
 <script>
-    // 1. BOOT SEQUENCE
+    // 1. ADD YOUR TOKEN HERE
+    const apiToken = "YOUR_TOKEN_HERE"; 
+    const app_id = "1089"; 
+
+    // 2. BOOT LOGIC
     let p = 0;
     const loader = setInterval(() => {
-        p++;
+        p += 2;
         document.getElementById('progress').style.width = p + "%";
-        document.getElementById('percent').innerText = p;
         if (p >= 100) {
             clearInterval(loader);
             document.getElementById('preloader').style.display = 'none';
             document.getElementById('main-content').style.display = 'block';
         }
-    }, 30);
+    }, 40);
 
-    // 2. DERIV API CONNECTION
-    const app_id = "1089"; // Replace with your actual App ID
+    // 3. API LOGIC
     const ws = new WebSocket(`wss://ws.binaryws.com/websockets/v3?app_id=${app_id}`);
-
-    function authorize(token) {
-        ws.send(JSON.stringify({ authorize: token }));
-    }
+    
+    ws.onopen = () => {
+        ws.send(JSON.stringify({ authorize: apiToken }));
+    };
 
     ws.onmessage = (msg) => {
         const res = JSON.parse(msg.data);
         if (res.authorize) {
-            document.getElementById('balance-display').innerText = "Authenticating...";
             ws.send(JSON.stringify({ balance: 1 }));
         } else if (res.balance) {
             document.getElementById('balance-display').innerText = 
                 `${res.balance.balance} ${res.balance.currency}`;
-        } else if (res.error) {
-            alert("API Error: " + res.error.message);
         }
     };
 
-    // 3. NAVIGATION
-    function showPage(id, btn) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        btn.classList.add('active');
+    function placeTrade(type) {
+        alert("Preparing " + type + " trade...");
+        // Add your specific trade execution logic here
     }
 </script>
 </body>
-                    </html>
+</html>
