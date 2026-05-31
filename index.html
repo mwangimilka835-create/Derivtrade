@@ -1091,12 +1091,35 @@ progressBar.style.width = progress + '%';
                        alert('Ready to connect to Deriv API. Add your implementation in connectToDeriv()');
             }
         };
-        // In your Deriv integration section, add:
-const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
+        const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
 
-ws.send(JSON.stringify({
-    authorize: TEKKZjSqFea7fOZ
-}));
+ws.onopen = function() {
+  console.log('Connected to Deriv');
+  
+  const token = prompt('Paste your Deriv API token:');
+  if (token) {
+    ws.send(JSON.stringify({
+      authorize: token
+    }));
+  }
+};
+
+ws.onmessage = function(msg) {
+  const data = JSON.parse(msg.data);
+  console.log('Deriv response:', data);
+  
+  if (data.error) {
+    alert('Error: ' + data.error.message);
+  }
+  if (data.authorize) {
+    alert('Connected! Login ID: ' + data.authorize.loginid);
+  }
+};
+
+ws.onerror = function(err) {
+  alert('Connection failed: ' + err.message);
+};
+        
     
   </script>
 </body>
