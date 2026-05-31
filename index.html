@@ -1115,11 +1115,15 @@ ws.onmessage = function(msg) {
 
     // 2. IMPORTANT: If your whole app is inside a container with id="app", 
     // make sure it is visible. If your bot cards are hidden, reveal them here:
-    document.querySelectorAll('.bot-card, .load-bot, .premium-bots, .free-bots, .analysis').forEach(el => {
-        el.style.display = 'block'; // Ensure display is not 'none'
-        el.style.opacity = '1';      // Set opacity to 1
-        el.style.pointerEvents = 'auto';
-    });
+    // Correct way to display the app container
+const appContainer = document.getElementById('app');
+if (appContainer) {
+    appContainer.style.display = 'flex';
+    appContainer.style.opacity = '1';
+    appContainer.style.pointerEvents = 'auto';
+        }
+      // Force the first tab (Speedbot) to be visible after connection
+document.querySelector('.nav-tab').click();
     
     // 3. Remove the loading screen if it is still there
     const loader = document.getElementById('loadingScreen');
