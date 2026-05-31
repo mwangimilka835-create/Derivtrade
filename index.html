@@ -1089,8 +1089,8 @@ progressBar.style.width = progress + '%';
 
   ws.onopen = function() {
     console.log('Connected to Deriv');
-    
-    const token = prompt('***********7fOZ:');
+      
+    const token = 'pat_ed586a9ab1ede610dca73cad956da3af12e8027bf2cf3e5a72797dcd9f9e27c1';
     if (token) {
       ws.send(JSON.stringify({
         authorize: token
