@@ -1113,7 +1113,8 @@ progressBar.style.width = progress + '%';
       ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
     } 
     else if (data.balance) {
-      alert('Balance: ' + data.balance + ' + data.balance.currency);
+        alert('Balance: ' + data.balance + ' + data.balance.currency);
+   
       // Update your dashboard here: document.getElementById('virtualBalance').textContent = data.balance
     }
   };
