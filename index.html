@@ -1112,11 +1112,15 @@ ws.onmessage = function(msg) {
     
     // --- THIS IS THE CRITICAL PART ---
     // You must add code here to reveal your sections:
-    const mainDashboard = document.getElementById('main-dashboard-id'); // Replace with your actual ID
-    if (mainDashboard) {
-        mainDashboard.style.display = 'block'; 
-        console.log('Dashboard revealed');
-    }
+      const mainDashboard = document.querySelector('.bots-hub');
+if (mainDashboard) {
+  mainDashboard.querySelectorAll('.bot-card').forEach(card => {
+    card.style.opacity = '1';
+    card.style.pointerEvents = 'auto';
+  });
+  console.log('Dashboard revealed');
+        }
+    
   }
 };
 
