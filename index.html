@@ -1098,41 +1098,27 @@ progressBar.style.width = progress + '%';
       ws.send(JSON.stringify({ authorize: token }));
     }
   };
-ws.onmessage = function(msg) {
-  const data = JSON.parse(msg.data);
-  console.log('Deriv response:', data); // Check the console to see if data arrives
 
-  if (data.error) {
-    console.error('Error:', data.error.message);
-  } else if (data.authorize) {
-    console.log('Authorized successfully');
-    ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-      } else if (data.balance) {
-    console.log('Balance received:', data.balance.balance);
+            ws.onmessage = function(msg) {
+    const data = JSON.parse(msg.data);
     
-    // 1. Update the balance display
-    document.getElementById('virtualBalance').textContent = '$' + data.balance.balance.toFixed(2);
-
-    // 2. IMPORTANT: If your whole app is inside a container with id="app", 
-    // make sure it is visible. If your bot cards are hidden, reveal them here:
-    // Correct way to display the app container
-const appContainer = document.getElementById('app');
-if (appContainer) {
-    appContainer.style.display = 'flex';
-    appContainer.style.opacity = '1';
-    appContainer.style.pointerEvents = 'auto';
+    if (data.error) {
+        console.error('Deriv Error:', data.error.message);
+    } else if (data.authorize) {
+        console.log('Authorized');
+        ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+    } else if (data.balance) {
+        console.log('Balance:', data.balance.balance);
+        
+        // Show app
+        const app = document.getElementById('app');
+        if (app) {
+            app.style.display = 'flex';
+            app.style.opacity = '1';
+            app.style.pointerEvents = 'auto';
         }
-      // Force the first tab (Speedbot) to be visible after connection
-document.querySelector('.nav-tab').click();
-    
-    // 3. Remove the loading screen if it is still there
-    const loader = document.getElementById('loadingScreen');
-    if (loader) {
-        loader.style.display = 'none';
     }
-    }
-
-};
+}; // End of ws.onmessage
 
  
             
