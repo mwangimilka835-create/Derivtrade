@@ -1085,41 +1085,38 @@ progressBar.style.width = progress + '%';
         // Connection placeholder for Deriv API
         // User will add their API credentials when they're ready
         window.connectToDeriv = function() {
-            const token = prompt('TEKKZjSqFea7fOZ:');
-            if (token) {
-                console.log('Deriv API connection ready for: ' + token);
-                       alert('Ready to connect to Deriv API. Add your implementation in connectToDeriv()');
-            }
-        };
-        const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
+  const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
 
-ws.onopen = function() {
-  console.log('Connected to Deriv');
-  
-  const token = prompt('Paste your Deriv API token:');
-  if (token) {
-    ws.send(JSON.stringify({
-      authorize: token
-    }));
-  }
-};
+  ws.onopen = function() {
+    console.log('Connected to Deriv');
+    
+    const token = prompt('Paste your Deriv API token:');
+    if (token) {
+      ws.send(JSON.stringify({
+        authorize: token
+      }));
+    }
+  };
 
-ws.onmessage = function(msg) {
-  const data = JSON.parse(msg.data);
-  console.log('Deriv response:', data);
-  
-  if (data.error) {
-    alert('Error: ' + data.error.message);
-  }
-  if (data.authorize) {
-    alert('Connected! Login ID: ' + data.authorize.loginid);
-  }
-};
+  ws.onmessage = function(msg) {
+    const data = JSON.parse(msg.data);
+    console.log('Deriv response:', data);
 
-ws.onerror = function(err) {
-  alert('Connection failed: ' + err.message);
+    if (data.error) {
+      alert('Error: ' + data.error.message);
+    }
+    if (data.authorize) {
+      alert('Connected! Login ID: ' + data.authorize.loginid);
+    }
+  };
+
+  ws.onerror = function(err) {
+    alert('Connection failed. Check console for details.');
+    console.log('WebSocket error:', err);
+  };
 };
         
+  
     
   </script>
 </body>
