@@ -1108,14 +1108,19 @@ progressBar.style.width = progress + '%';
     alert('Connected! Login ID: ' + data.authorize.loginid);
     // Request balance
     ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
-  } else if (data.balance) {
-    // Corrected access to balance value and currency
-    alert('Balance: ' + data.balance.balance + ' ' + data.balance.currency);
-    
-    // Example of how to update your UI:
-    // document.getElementById('virtualBalance').textContent = data.balance.balance;
-  }
-};
+  } 
+            else if (data.balance) {
+  // Update balance
+  document.getElementById('virtualBalance').textContent = '$' + data.balance.toFixed(2);
+  
+  // Enable the bot cards
+  document.querySelectorAll('.bot-card, .load-bot, .premium-bots, .free-bots, .analysis-tool').forEach(el => {
+    el.style.opacity = '1';
+    el.style.pointerEvents = 'auto';
+  });
+  
+  alert('Connected! Balance: ' + data.balance + ' + data.balance.currency);
+        }
 
 
 
