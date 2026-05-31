@@ -1091,6 +1091,12 @@ progressBar.style.width = progress + '%';
                        alert('Ready to connect to Deriv API. Add your implementation in connectToDeriv()');
             }
         };
+        // In your Deriv integration section, add:
+const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
+
+ws.send(JSON.stringify({
+    authorize: TEKKZjSqFea7fOZ
+}));
     
   </script>
 </body>
