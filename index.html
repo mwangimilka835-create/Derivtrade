@@ -1086,18 +1086,16 @@ progressBar.style.width = progress + '%';
         startLoadingAnimation();
 
         // Connection placeholder for Deriv API
-        // User will add their API credentials when they're ready
+        // User will add their API credentials when t
         window.connectToDeriv = function() {
+  const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
   
-const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
   ws.onopen = function() {
     console.log('Connected to Deriv');
-      
-    const token = 'L3TcDod9m7u1aVt';
+    
+    const token = 'YOUR_NEW_TOKEN_HERE'; // DELETE the old one on Deriv ASAP
     if (token) {
-      ws.send(JSON.stringify({
-        authorize: token
-      }));
+      ws.send(JSON.stringify({ authorize: token }));
     }
   };
 
@@ -1107,9 +1105,16 @@ const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
 
     if (data.error) {
       alert('Error: ' + data.error.message);
-    }
-    if (data.authorize) {
+    } 
+    else if (data.authorize) {
       alert('Connected! Login ID: ' + data.authorize.loginid);
+      
+      // Request balance AFTER authorization
+      ws.send(JSON.stringify({ balance: 1, subscribe: 1 }));
+    } 
+    else if (data.balance) {
+      alert('Balance: ' + data.balance + ' + data.balance.currency);
+      // Update your dashboard here: document.getElementById('virtualBalance').textContent = data.balance
     }
   };
 
