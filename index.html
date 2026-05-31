@@ -1088,8 +1088,8 @@ progressBar.style.width = progress + '%';
         // Connection placeholder for Deriv API
         // User will add their API credentials when they're ready
         window.connectToDeriv = function() {
-  const ws = new WebSocket('wss://ws.derivws.com/websockets/v3');
-
+  
+const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
   ws.onopen = function() {
     console.log('Connected to Deriv');
       
