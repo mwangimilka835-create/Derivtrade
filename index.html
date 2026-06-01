@@ -1128,7 +1128,12 @@ function updateTickers() {
 }
 setInterval(updateTickers, 1200);
 updateTickers();
+// ... after tickerData.R100 = ... (your existing simulation code) ...
 
+// Add this to send the data to the chart
+if (window.priceChart) {
+    updateChart(tickerData.R100); // This uses your R100 simulation
+  }
   
 function loadChart() {
   const sym = document.getElementById('chartSymbol').value;
