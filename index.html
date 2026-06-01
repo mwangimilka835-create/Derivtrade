@@ -1123,24 +1123,23 @@ function updateTickers() {
 setInterval(updateTickers, 1200);
 updateTickers();
 
-// ── CHART ──
+  
 function loadChart() {
   const sym = document.getElementById('chartSymbol').value;
   const tf = document.getElementById('chartTF').value;
-  const tfMap = {'1m':'1','5m':'5','15m':'15','1h':'60','1D':'D'};
-  const symMap = {
-    'R_100':'BINARYCOM:R_100','R_75':'BINARYCOM:R_75','R_50':'BINARYCOM:R_50',
-    'R_25':'BINARYCOM:R_25','1HZ100V':'BINARYCOM:1HZ100V','1HZ75V':'BINARYCOM:1HZ75V',
-    'EUR/USD':'FX:EURUSD','GBP/USD':'FX:GBPUSD'
-  };
-  const tvSym = symMap[sym] || ('BINARYCOM:'+sym.replace('/',''));
-  const interval = tfMap[tf] || '60';
-  const src = `https://s.tradingview.com/widgetembed/?frameElementId=tv&symbol=${encodeURIComponent(tvSym)}&interval=${interval}&hidesidetoolbar=1&hidetoptoolbar=0&saveimage=0&toolbarbg=1a2235&theme=dark&style=1&timezone=Etc%2FUTC&studies=[]&locale=en`;
+  
+  // Use a standard public symbol to test if the Iframe works at all
+  const testSymbol = "FX:EURUSD"; 
+  const src = `https://s.tradingview.com/widgetembed/?symbol=${testSymbol}&interval=60&theme=dark`;
+  
   const frame = document.getElementById('tvFrame');
-  if(frame) frame.src = src;
-  if(document.getElementById('chartSym2')) document.getElementById('chartSym2').textContent = sym;
-}
-function updateChartSymbol() { loadChart(); }
+  if(frame) {
+      frame.src = src;
+      frame.onload = () => console.log("Chart loaded successfully");
+      frame.onerror = (e) => console.error("Chart failed to load", e);
+  }
+  }
+
 
 // ── CONNECT MODAL ──
 function openConnectModal() { document.getElementById('connectModal').classList.add('open'); }
