@@ -530,7 +530,45 @@
         <div class="flex-between"><span style="font-size:13px;color:var(--text2);">Connection</span><span id="connStatus"><span class="dot dot-red"></span><span style="font-size:12px;">Not connected</span></span></div>
         <button class="btn btn-accent mt8" onclick="openConnectModal()">Connect to Deriv API</button>
       </div>
+    </div><!-- ══ CHART VIEW ══ -->
+<div class="view" id="view-chart">
+  <button class="connect-banner" id="connectBtn2" onclick="openConnectModal()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
+    Connect to Deriv
+  </button>
+
+  <div style="height:10px"></div>
+
+  <div class="symbol-tabs" id="symbolTabs">
+    <div class="symbol-tab active" onclick="selectSymbol('R_100', this)">R_100</div>
+    <div class="symbol-tab" onclick="selectSymbol('R_75', this)">R_75</div>
+    <div class="symbol-tab" onclick="selectSymbol('R_50', this)">R_50</div>
+    <div class="symbol-tab" onclick="selectSymbol('R_25', this)">R_25</div>
+    <div class="symbol-tab" onclick="selectSymbol('1HZ100V', this)">1HZ100V</div>
+    <div class="symbol-tab" onclick="selectSymbol('1HZ75V', this)">1HZ75V</div>
+    <div class="symbol-tab" onclick="selectSymbol('frxEURUSD', this)">EUR/USD</div>
+    <div class="symbol-tab" onclick="selectSymbol('frxGBPUSD', this)">GBP/USD</div>
+  </div>
+
+  <div class="tf-tabs">
+    <div class="tf-tab active" onclick="selectTf(60, this)">1m</div>
+    <div class="tf-tab" onclick="selectTf(300, this)">5m</div>
+    <div class="tf-tab" onclick="selectTf(900, this)">15m</div>
+    <div class="tf-tab" onclick="selectTf(3600, this)">1h</div>
+    <div class="tf-tab" onclick="selectTf(86400, this)">1D</div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-header">
+      <div>
+        <div class="chart-symbol" id="chartSym">R_100</div>
+        <div class="chart-change up" id="chartChg">+0.00%</div>
+      </div>
+      <div class="chart-price" id="chartPrice">--</div>
     </div>
+    <canvas id="priceChart" height="200"></canvas>
+                                                                           </div>
+      
 
     <!-- ══════════════════════════════
          CHART SECTION
