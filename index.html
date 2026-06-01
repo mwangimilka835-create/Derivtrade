@@ -531,44 +531,37 @@
         <button class="btn btn-accent mt8" onclick="openConnectModal()">Connect to Deriv API</button>
       </div>
     </div>
-    <!-- ══ CHART VIEW ══ -->
-<div class="view" id="view-chart">
-  <button class="connect-banner" id="connectBtn2" onclick="openConnectModal()">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>
-    Connect to Deriv
-  </button>
-
-  <div style="height:10px"></div>
-
-  <div class="symbol-tabs" id="symbolTabs">
-    <div class="symbol-tab active" onclick="selectSymbol('R_100', this)">R_100</div>
-    <div class="symbol-tab" onclick="selectSymbol('R_75', this)">R_75</div>
-    <div class="symbol-tab" onclick="selectSymbol('R_50', this)">R_50</div>
-    <div class="symbol-tab" onclick="selectSymbol('R_25', this)">R_25</div>
-    <div class="symbol-tab" onclick="selectSymbol('1HZ100V', this)">1HZ100V</div>
-    <div class="symbol-tab" onclick="selectSymbol('1HZ75V', this)">1HZ75V</div>
-    <div class="symbol-tab" onclick="selectSymbol('frxEURUSD', this)">EUR/USD</div>
-    <div class="symbol-tab" onclick="selectSymbol('frxGBPUSD', this)">GBP/USD</div>
-  </div>
-
-  <div class="tf-tabs">
-    <div class="tf-tab active" onclick="selectTf(60, this)">1m</div>
-    <div class="tf-tab" onclick="selectTf(300, this)">5m</div>
-    <div class="tf-tab" onclick="selectTf(900, this)">15m</div>
-    <div class="tf-tab" onclick="selectTf(3600, this)">1h</div>
-    <div class="tf-tab" onclick="selectTf(86400, this)">1D</div>
-  </div>
-
-  <div class="chart-container">
-    <div class="chart-header">
-      <div>
-        <div class="chart-symbol" id="chartSym">R_100</div>
-        <div class="chart-change up" id="chartChg">+0.00%</div>
+     <!-- ══════════════════════════════
+         CHART SECTION
+    ══════════════════════════════ -->
+    <div id="sec-chart" class="section">
+      <div class="card">
+        <div class="card-title"><span>📈</span> Chart</div>
+        <div class="flex gap8 mb8" style="flex-wrap:wrap;">
+          <div>
+            <label>Symbol</label>
+            <select id="chartSymbol" style="width:auto;min-width:140px;" onchange="updateChartSymbol()">
+              <option>R_100</option><option>R_75</option><option>R_50</option><option>R_25</option>
+              <option>1HZ100V</option><option>1HZ75V</option><option>EUR/USD</option><option>GBP/USD</option>
+            </select>
+          </div>
+          <div>
+            <label>Timeframe</label>
+            <select id="chartTF" style="width:auto;" onchange="updateChartSymbol()">
+              <option>1m</option><option>5m</option><option>15m</option><option selected>1h</option><option>1D</option>
+            </select>
+          </div>
+        </div>
+        <div id="tradingview-widget" style="height:350px;border-radius:10px;overflow:hidden;background:var(--bg3);border:1px solid var(--border);">
+          <iframe id="tvFrame" src="" width="100%" height="100%" frameborder="0" style="border-radius:10px;"></iframe>
+        </div>
+        <div class="flex-between mt8">
+          <div class="stat-card" style="flex:1;margin-right:6px;"><div class="stat-label">Symbol</div><div id="chartSym2" style="font-size:14px;font-weight:700;">R_100</div></div>
+          <div class="stat-card" style="flex:1;margin-right:6px;"><div class="stat-label">Price</div><div id="chartPrice" style="font-size:14px;font-weight:700;color:var(--accent);">--</div></div>
+          <div class="stat-card" style="flex:1;"><div class="stat-label">Change</div><div id="chartChange" style="font-size:14px;font-weight:700;" class="up">+0.00%</div></div>
+        </div>
       </div>
-      <div class="chart-price" id="chartPrice">--</div>
     </div>
-    <canvas id="priceChart" height="200"></canvas>
-                                                                           </div>
       
 
     
