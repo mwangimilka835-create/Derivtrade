@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>TraderWin.com - AI Trading Dashboard</title>
+<script src="https://unpkg.com/blockly/blockly.min.js"></script>
+<script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
 <style>
   :root {
     --bg: #0a0e1a;
@@ -24,6 +26,13 @@
     --radius: 10px;
     --font: 'Segoe UI', system-ui, sans-serif;
   }
+  #blocklyDiv {
+    height: 400px; /* Force a height */
+    width: 100%;
+    border: 1px solid #ccc;
+    background: #fff;
+    margin-top: 10px;
+}
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
   
@@ -126,7 +135,14 @@
   /* ── SECTION PANELS ── */
   .section { display: none; }
   .section.active { display: block; }
-
+/* Hide all sections by default */
+.section {
+    display: none;
+}
+/* Show the active section */
+.section.active {
+    display: block;
+}
   /* ── CARDS ── */
   .card {
     background: var(--card);
@@ -500,6 +516,7 @@
   <!-- MAIN CONTENT -->
   <main class="main pb-nav">
 
+  
     <!-- ══════════════════════════════
          HOME SECTION
     ══════════════════════════════ -->
@@ -518,6 +535,7 @@
         <div class="card-title"><span>⚡</span> Quick Actions</div>
         <div class="grid2">
           <button class="btn btn-accent" onclick="showSection('apexbot',null)">🤖 Launch Apex Bot</button>
+              <button class="btn btn-accent" onclick="showSection('botbuilder',null)">📎 Launch  Bot Builder</button>
           <button class="btn btn-outline" onclick="showSection('manual',null)">📈 Manual Trade</button>
           <button class="btn btn-outline" onclick="showSection('speedbot',null)">⚡ Speedbot</button>
           <button class="btn btn-outline" onclick="showSection('copytrader',null)">👥 Copy Trader</button>
@@ -670,6 +688,14 @@
         <div id="apexHistory" style="font-size:12px;color:var(--text2);text-align:center;padding:16px 0;">No trades yet</div>
       </div>
     </div>
+    
+    <div id="sec-botbuilder" class="section">
+    <div class="card">
+        <div class="card-title"><span>🧩</span> Bot Builder</div>
+        <div id="blocklyDiv" style="height: 400px; width: 100%;"></div>
+        <button class="btn btn-accent" onclick="runGeneratedCode()">Run Strategy</button>
+    </div>
+</div>
 
     <!-- ══════════════════════════════
          ANALYSIS SECTION
@@ -712,8 +738,8 @@
         </div>
         <button class="btn btn-outline mt8" onclick="refreshSignals()">🔄 Refresh Signals</button>
       </div>
-    </div>
-       <!-- ══════════════════════════════
+  </div>
+    <!-- ══════════════════════════════
          MANUAL TRADER SECTION
     ══════════════════════════════ -->
     <div id="sec-manual" class="section">
@@ -936,7 +962,8 @@
         </div>
       </div>
     </div>
-        <!-- ══════════════════════════════
+      
+         <!-- ══════════════════════════════
          COPY TRADER SECTION
     ══════════════════════════════ -->
     <div id="sec-copytrader" class="section">
@@ -1278,7 +1305,6 @@ function showSection(id, el) {
 const tickerData = {
   R100: 8245.23, R75: 3124.56, R50: 1875.33, R25: 512.88, HZ100: 9012.44
 };
-
 function updateTickers() {
   if (isConnected) return; 
   function rnd(v) { return +(v * (1 + (Math.random()-0.5)*0.002)).toFixed(2); }
@@ -1289,9 +1315,11 @@ function updateTickers() {
   tickerData.R25 = rnd(tickerData.R25);
   tickerData.HZ100 = rnd(tickerData.HZ100);
 
-  // --- CHART UPDATE BLOCK ---
-  if (window.priceChart) {
+  // --- SAFE CHART UPDATE BLOCK ---
+  // We check window.priceChart AND the existence of the data property
+  if (window.priceChart && window.priceChart.data && window.priceChart.data.datasets) {
       const now = new Date().toLocaleTimeString().split(' ')[0];
+      
       priceChart.data.labels.push(now);
       priceChart.data.datasets[0].data.push(tickerData.R100);
       
@@ -1299,7 +1327,11 @@ function updateTickers() {
           priceChart.data.labels.shift();
           priceChart.data.datasets[0].data.shift();
       }
-      priceChart.update();
+      
+      // Only call update if the function exists
+      if (typeof priceChart.update === 'function') {
+          priceChart.update();
+      }
   }
 
   // --- TICKER BAR UPDATE ---
@@ -1327,42 +1359,21 @@ function updateTickers() {
 setInterval(updateTickers, 1200);
 updateTickers();
 function initChart() {
-    const ctx = document.getElementById('priceChart').getContext('2d');
+    const ctx = document.getElementById('priceChart');
+    if (!ctx) return; // Exit if the canvas doesn't exist
+
+    // Safely destroy if it exists AND is a Chart.js instance
+    if (window.priceChart && typeof window.priceChart.destroy === 'function') {
+        window.priceChart.destroy();
+    }
     
-    // Destroy existing chart if it exists to prevent overlap
-    if (window.priceChart) window.priceChart.destroy();
-    
-    window.priceChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: 'Price',
-                data: [],
-                borderColor: '#22c55e',
-                borderWidth: 2,
-                fill: false,
-                tension: 0.3
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { 
-                    beginAtZero: false, // This is crucial for high prices
-                    ticks: { color: '#fff' } 
-                },
-                x: { ticks: { color: '#fff' } }
-            }
-        }
+    // Proceed with initialization
+    window.priceChart = new Chart(ctx.getContext('2d'), {
+        // ... your existing config
     });
 }
 
-
-
-
-// ══════════════════════════════════════
+  // ══════════════════════════════════════
 //  DERIV WS
 // ══════════════════════════════════════
 function connectDeriv(autoConnect = false) {
@@ -1765,6 +1776,50 @@ function refreshSignals() {
 
 // ── INIT ──
 // Token already handled in state init above
+
+// Replace the duplicate Blockly.inject blocks at the bottom with this single version:
+
+
+// 1. Initialize Workspace ONCE
+window.addEventListener('load', () => {
+    // Only run if the div exists
+    const container = document.getElementById('blocklyDiv');
+    if (container && typeof Blockly !== 'undefined') {
+        window.workspace = Blockly.inject('blocklyDiv', {
+            toolbox: `
+                <xml>
+                  <block type="math_number"></block>
+                  <block type="controls_if"></block>
+                  <block type="buy_trade"></block>
+                </xml>`
+        });
+        console.log("Blockly initialized.");
+    }
+});
+
+
+
+// 2. Robust Execution Function
+
+function runGeneratedCode() {
+    if (!window.workspace) return;
+    
+    try {
+        var code = Blockly.JavaScript.workspaceToCode(window.workspace);
+        
+        // Prevent running if the code is empty or just whitespace
+        if (!code || code.trim() === "") {
+            console.warn("Workspace is empty or contains incomplete blocks.");
+            return; 
+        }
+        
+        console.log("Executing:", code);
+        eval(code);
+    } catch (e) {
+        console.error("Bot Execution Error:", e);
+    }
+}
+
 </script>
 </body>
 </html>
