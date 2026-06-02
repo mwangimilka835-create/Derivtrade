@@ -1920,6 +1920,26 @@ function runGeneratedCode() {
         console.error("Bot Execution Error:", e);
     }
 }
+  window.addEventListener('load', () => {
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const overlay = document.getElementById('loader-overlay');
+    let width = 0;
+
+    const interval = setInterval(() => {
+        if (width >= 100) {
+            clearInterval(interval);
+            // Hide the loader after reaching 100%
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.5s';
+            setTimeout(() => overlay.style.display = 'none', 500);
+        } else {
+            width++;
+            progressBar.style.width = width + '%';
+            progressText.innerText = width + '%';
+        }
+    }, 20); // Adjust speed: 20ms * 100 = 2 seconds total load time
+});
 
 </script>
 </body>
