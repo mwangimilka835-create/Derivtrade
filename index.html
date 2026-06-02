@@ -1951,6 +1951,40 @@ function runGeneratedCode() {
         }
     }, 20); // Adjust speed: 20ms * 100 = 2 seconds total load time
 });
+  // At the top of your script
+let registeredUser = localStorage.getItem('savedUser') || "";
+let registeredPass = localStorage.getItem('savedPass') || "";
+
+function handleAuth(event) {
+    if(event) event.preventDefault();
+    const user = document.getElementById('auth-user').value.trim();
+    const pass = document.getElementById('auth-pass').value.trim();
+
+    if (!user || !pass) {
+        alert("Fields cannot be blank!");
+        return;
+    }
+
+    if (isLoginMode) {
+        // This will now accept ANY combination of letters/numbers saved during Sign Up
+        if (registeredUser && user === registeredUser && pass === registeredPass) {
+            document.getElementById('auth-overlay').style.display = 'none';
+        } else {
+            alert("Incorrect credentials.");
+        }
+    } else {
+        // Sign Up: Saves whatever the user types (Letters, Numbers, Symbols)
+        registeredUser = user;
+        registeredPass = pass;
+        
+        // Optional: Save to browser so it remembers even after refresh
+        localStorage.setItem('savedUser', user);
+        localStorage.setItem('savedPass', pass);
+        
+        alert("Account created! You can now log in.");
+        toggleAuthMode();
+    }
+  }
 
 </script>
 </body>
