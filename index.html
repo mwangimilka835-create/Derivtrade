@@ -516,7 +516,6 @@
   <!-- MAIN CONTENT -->
   <main class="main pb-nav">
 
-  
     <!-- ══════════════════════════════
          HOME SECTION
     ══════════════════════════════ -->
@@ -546,7 +545,7 @@
         <div class="flex-between mb8"><span style="font-size:13px;color:var(--text2);">Account Type</span><span class="badge badge-yellow" id="acctType">DEMO</span></div>
         <div class="flex-between mb8"><span style="font-size:13px;color:var(--text2);">Balance</span><span style="font-size:14px;font-weight:700;" id="acctBalance">--</span></div>
         <div class="flex-between"><span style="font-size:13px;color:var(--text2);">Connection</span><span id="connStatus"><span class="dot dot-red"></span><span style="font-size:12px;">Not connected</span></span></div>
-        <button class="btn btn-accent mt8" onclick="openConnectModal()">Connect to Deriv API</button>
+               <button class="btn btn-accent mt8" onclick="openConnectModal()">Connect to Deriv API</button>
       </div>
     </div>
 
@@ -738,8 +737,8 @@
         </div>
         <button class="btn btn-outline mt8" onclick="refreshSignals()">🔄 Refresh Signals</button>
       </div>
-  </div>
-    <!-- ══════════════════════════════
+    </div>
+       <!-- ══════════════════════════════
          MANUAL TRADER SECTION
     ══════════════════════════════ -->
     <div id="sec-manual" class="section">
@@ -963,7 +962,7 @@
       </div>
     </div>
       
-         <!-- ══════════════════════════════
+           <!-- ══════════════════════════════
          COPY TRADER SECTION
     ══════════════════════════════ -->
     <div id="sec-copytrader" class="section">
@@ -1285,9 +1284,7 @@ function onPoc(data) {
 
 
 
-
-
-// ── SECTION NAVIGATION ──
+  // ── SECTION NAVIGATION ──
 function showSection(id, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -1373,7 +1370,7 @@ function initChart() {
     });
 }
 
-  // ══════════════════════════════════════
+// ══════════════════════════════════════
 //  DERIV WS
 // ══════════════════════════════════════
 function connectDeriv(autoConnect = false) {
@@ -1750,7 +1747,7 @@ function runAnalysis() {
   const signals = ['STRONG BUY','BUY','HOLD','SELL','STRONG SELL'];
   const sig = signals[Math.floor(Math.random()*signals.length)];
   const val = (Math.random()*100).toFixed(1);
-  const sigColor = {'STRONG BUY':'var(--green)','BUY':'#4ade80','HOLD':'var(--yellow)','SELL':'#f87171','STRONG SELL':'var(--red)'}[sig];
+    const sigColor = {'STRONG BUY':'var(--green)','BUY':'#4ade80','HOLD':'var(--yellow)','SELL':'#f87171','STRONG SELL':'var(--red)'}[sig];
   el.innerHTML = `
     <div class="flex-between mb8">
       <span style="font-size:13px;color:var(--text2);">${sym} · ${ind}</span>
