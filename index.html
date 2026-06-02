@@ -1952,6 +1952,96 @@ function runGeneratedCode() {
     }, 20); // Adjust speed: 20ms * 100 = 2 seconds total load time
 });
 
+  // Authentication System
+let authMode = 'login'; // 'login' or 'signup'
+const users = JSON.parse(localStorage.getItem('users')) || {};
+
+function toggleAuthMode() {
+  authMode = authMode === 'login' ? 'signup' : 'login';
+  const authTitle = document.getElementById('auth-title');
+  const authBtn = document.getElementById('auth-btn');
+  const toggleText = document.querySelector('[onclick="toggleAuthMode()"]');
+  
+  if (authMode === 'signup') {
+    authTitle.textContent = 'Sign Up';
+    authBtn.textContent = 'Create Account';
+    toggleText.innerHTML = 'Already have an account? <span style="color:var(--green);">Login</span>';
+  } else {
+    authTitle.textContent = 'Login';
+    authBtn.textContent = 'Login';
+    toggleText.innerHTML = 'New user? <span style="color:var(--green);">Sign Up</span>';
+  }
+}
+
+function handleAuth() {
+  const username = document.getElementById('auth-user').value.trim();
+  const password = document.getElementById('auth-pass').value.trim();
+  
+  if (!username || !password) {
+    alert('Please enter username and password');
+    return;
+  }
+  
+  if (username.length < 3) {
+    alert('Username must be at least 3 characters');
+    return;
+  }
+  
+  if (password.length < 4) {
+    alert('Password must be at least 4 characters');
+    return;
+  }
+  
+  if (authMode === 'signup') {
+    // Sign Up
+    if (users[username]) {
+      alert('Username already exists. Please choose another.');
+      return;
+    }
+    users[username] = password;
+    localStorage.setItem('users', JSON.stringify(users));
+    alert('✓ Account created successfully! Please login now.');
+    
+    // Switch to login mode
+    authMode = 'login';
+    document.getElementById('auth-title').textContent = 'Login';
+    document.getElementById('auth-btn').textContent = 'Login';
+    document.querySelector('[onclick="toggleAuthMode()"]').innerHTML = 'New user? <span style="color:var(--green);">Sign Up</span>';
+    document.getElementById('auth-user').value = '';
+    document.getElementById('auth-pass').value = '';
+  } else {
+    // Login
+    if (!users[username]) {
+      alert('Username not found. Please sign up first.');
+      return;
+    }
+    
+    if (users[username] !== password) {
+      alert('Incorrect password. Please try again.');
+      return;
+    }
+    
+    // Login successful
+    localStorage.setItem('currentUser', username);
+    alert('✓ Login successful! Welcome ' + username);
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('loader-overlay').style.display = 'none';
+  }
+}
+
+// Check if user is already logged in on page load
+window.addEventListener('load', () => {
+  const currentUser = localStorage.getItem('currentUser');
+  if (currentUser) {
+    document.getElementById('auth-overlay').style.display = 'none';
+    document.getElementById('loader-overlay').style.display = 'none';
+  } else {
+    document.getElementById('auth-overlay').style.display = 'flex';
+    document.getElementById('loader-overlay').style.display = 'none';
+  }
+});
+  
+
 
 </script>
 </body>
